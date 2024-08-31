@@ -1,0 +1,77 @@
+CREATE TABLE answer
+(answer_id SERIAL NOT NULL,
+text VARCHAR(500) NOT NULL,
+PRIMARY KEY (answer_id)); 
+
+
+CREATE TABLE subject
+(subject_id SERIAL NOT NULL,
+subject_name VARCHAR(255) UNIQUE NOT NULL,
+PRIMARY KEY (subject_id)); 
+
+CREATE TABLE lecturer
+(lecturer_id SERIAL NOT NULL,
+username VARCHAR(15) UNIQUE NOT NULL CHECK (LENGTH(username) > 1),
+password VARCHAR (300) NOT NULL,
+PRIMARY KEY (lecturer_id)); 
+
+
+CREATE TABLE question 
+	(question_id SERIAL NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    difficulty VARCHAR(7) NOT NULL CHECK (difficulty IN ('easy', 'medium', 'hard')),
+    lecturer_id INT NOT NULL,
+    subject_id INT NOT NULL,
+    PRIMARY KEY (question_id),
+    FOREIGN KEY (lecturer_id) REFERENCES lecturer(lecturer_id),
+    FOREIGN KEY (subject_id) REFERENCES subject(subject_id));
+
+CREATE TABLE open_question
+    (question_id INT NOT NULL,
+    answer_id INT NOT NULL,
+    PRIMARY KEY (question_id, answer_id),
+    FOREIGN KEY (question_id) REFERENCES question(question_id),
+    FOREIGN KEY (answer_id) REFERENCES answer(answer_id));
+
+CREATE TABLE multiple_choice_question 
+    (question_id INT PRIMARY KEY,
+    FOREIGN KEY (question_id) REFERENCES Question(question_id));
+
+CREATE TABLE multiple_choice_question_answer
+    (question_id INT NOT NULL,
+    answer_id INT NOT NULL,
+    is_correct_answer BOOLEAN NOT NULL,
+    PRIMARY KEY (question_id, answer_id),
+    FOREIGN KEY (question_id) REFERENCES multiple_choice_question(question_id),
+    FOREIGN KEY (answer_id) REFERENCES Answer(answer_id));
+
+CREATE TABLE subject_lecturer
+    (subject_id INT NOT NULL,
+    lecturer_id INT NOT NULL,
+    PRIMARY KEY (subject_id, lecturer_id),
+    FOREIGN KEY (subject_id) REFERENCES subject(subject_id),
+    FOREIGN KEY (lecturer_id) REFERENCES lecturer(lecturer_id));
+
+CREATE TABLE exam
+    (exam_id SERIAL NOT NULL,
+    subject_id INT NOT NULL,
+    lecturer_id INT NOT NULL,
+    PRIMARY KEY (exam_id),
+    FOREIGN KEY (subject_id) REFERENCES subject(subject_id),
+    FOREIGN KEY (lecturer_id) REFERENCES lecturer(lecturer_id));
+
+CREATE TABLE exam_question
+    (exam_id INT NOT NULL,
+    question_id INT NOT NULL,
+    PRIMARY KEY (exam_id, question_id),
+    FOREIGN KEY (exam_id) REFERENCES exam(exam_id),
+    FOREIGN KEY (question_id) REFERENCES question(question_id));
+
+
+INSERT INTO subject (subject_name) 
+VALUES 
+('Math'),
+('History'),
+('English'),
+('Biology');
+
